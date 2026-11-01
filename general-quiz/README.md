@@ -1,16 +1,91 @@
-# React + Vite
+# General Quiz
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+General Quiz is a web application built with React where users can test their general knowledge by answering multiple-choice questions on different topics.
 
-Currently, two official plugins are available:
+Users can choose the difficulty level and how many questions they want to answer. At the end of the quiz, they can see their score and check their previous attempts.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This is my final project for the Web Development course.
 
-## React Compiler
+Author: Andrew Okeke
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Live demo: *Link will be added after deployment.*
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Home page where users can choose the difficulty and number of questions.
+- Quiz page that gets questions from an external API and displays them one at a time.
+- Answer options are shuffled for each question.
+- Immediate feedback after selecting an answer.
+- Progress bar and score tracking during the quiz.
+- Results page showing the latest score and previous quiz attempts.
+- Quiz history is saved in the browser using localStorage.
+- Loading messages and error handling, including API rate-limit messages.
+- Responsive design for both mobile phones and desktop screens.
+
+## Technologies Used
+
+- [React](https://react.dev/) – for building the user interface.
+- [Vite](https://vite.dev/) – for setting up and running the project.
+- [React Router](https://reactrouter.com/) – for moving between the different pages.
+- [React-Bootstrap](https://react-bootstrap.github.io/) and [Bootstrap](https://getbootstrap.com/) – for the layout and styling.
+- [he](https://github.com/mathiasbynens/he) – for decoding HTML entities in the questions received from the API.
+- [Open Trivia DB](https://opentdb.com/) – for getting the quiz questions.
+
+## Getting Started
+
+### Requirements
+
+To run this project, you need:
+
+- [Node.js](https://nodejs.org/) (version 18 or newer).
+- npm (included with Node.js).
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/andrewchiemerieokeke-pixel/general-quiz.git
+   ```
+
+2. Open the project folder:
+
+   ```bash
+   cd general-quiz
+   ```
+
+3. Install the required packages:
+
+   ```bash
+   npm install
+   ```
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Open the local address shown in your terminal. It is usually:
+
+   `http://localhost:5173`
+
+## Project Structure
+
+```text
+src/
+├── components/
+│   └── AppNavbar.jsx    Navigation bar
+├── pages/
+│   ├── Home.jsx         Quiz settings
+│   ├── Quiz.jsx         Quiz questions and functionality
+│   └── Results.jsx      Results and quiz history
+├── App.jsx              Application routes
+└── main.jsx             Application entry point
+```
+
+## API
+
+The questions used in this application come from [Open Trivia DB](https://opentdb.com/api_config.php).
+
+The app uses `fetch` and `async/await` to request questions from the API. Open Trivia DB has a limit of one request every five seconds per IP address. If a user starts quizzes too quickly, the API may temporarily reject a request, and the app displays a message asking them to wait before trying again.
