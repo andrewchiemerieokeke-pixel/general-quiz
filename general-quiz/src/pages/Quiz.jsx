@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import { Spinner, Alert, Button, Card, ProgressBar } from 'react-bootstrap'
 import { decode } from 'he'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
 
 function shuffle(array) {
   const copy = [...array]
@@ -14,6 +15,7 @@ function shuffle(array) {
 
 function Quiz() {
   const { state } = useLocation()
+  const navigate = useNavigate()
   const difficulty = state?.difficulty ?? ''
   const amount = state?.amount ?? 10
 
@@ -86,6 +88,27 @@ function Quiz() {
     setSelected(null)
     setCurrentIndex((i) => i + 1)
   }
+
+  function handleFinish() {
+  const attempt = {
+    id: Date.now(),
+    date: new Date().toLocaleString(),
+    score,
+    total: questions.length,
+    difficulty: difficulty || 'any',
+  }
+
+  let history = []
+  try {
+    history = JSON.parse(localStorage.getItem('quizHistory')) || []
+  } catch {
+    history = []
+  }
+  history.push(attempt)
+  localStorage.setItem('quizHistory', JSON.stringify(history))
+
+  navigate('/results', { state: attempt })
+}
 
   if (loading) {
     return (
