@@ -8,7 +8,7 @@ This is my final project for the Web Development course.
 
 Author: Andrew Okeke
 
-Live demo: *Link will be added after deployment.*
+Live demo: https://andrewchiemerieokeke-pixel.github.io/general-quiz/ 
 
 ## Features
 
