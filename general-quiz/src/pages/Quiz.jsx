@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
-import { Spinner, Alert, Button } from 'react-bootstrap'
+import { Spinner, Alert, Button, Card, ProgressBar } from 'react-bootstrap'
 import { decode } from 'he'
+
+function shuffle(array) {
+  const copy = [...array]
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[copy[i], copy[j]] = [copy[j], copy[i]]
+  }
+  return copy
+}
 
 function Quiz() {
   const { state } = useLocation()
@@ -11,6 +20,9 @@ function Quiz() {
   const [questions, setQuestions] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [selected, setSelected] = useState(null)
+  const [score, setScore] = useState(0)
   const hasFetched = useRef(false)
 
   useEffect(() => {
@@ -40,12 +52,16 @@ function Quiz() {
           throw new Error('The server could not provide questions. Please try again.')
         }
 
-        const cleaned = data.results.map((item) => ({
-          question: decode(item.question),
-          correctAnswer: decode(item.correct_answer),
-          incorrectAnswers: item.incorrect_answers.map((a) => decode(a)),
-          difficulty: item.difficulty,
-        }))
+        const cleaned = data.results.map((item) => {
+          const correctAnswer = decode(item.correct_answer)
+          const incorrectAnswers = item.incorrect_answers.map((a) => decode(a))
+          return {
+            question: decode(item.question),
+            correctAnswer,
+            answers: shuffle([correctAnswer, ...incorrectAnswers]),
+            difficulty: item.difficulty,
+          }
+        })
 
         setQuestions(cleaned)
       } catch (err) {
@@ -57,6 +73,19 @@ function Quiz() {
 
     loadQuestions()
   }, [amount, difficulty])
+
+  function handleAnswer(answer) {
+    if (selected !== null) return
+    setSelected(answer)
+    if (answer === questions[currentIndex].correctAnswer) {
+      setScore((s) => s + 1)
+    }
+  }
+
+  function handleNext() {
+    setSelected(null)
+    setCurrentIndex((i) => i + 1)
+  }
 
   if (loading) {
     return (
@@ -76,12 +105,53 @@ function Quiz() {
     )
   }
 
+  const current = questions[currentIndex]
+  const isLast = currentIndex === questions.length - 1
+
+  function getVariant(answer) {
+    if (selected === null) return 'outline-primary'
+    if (answer === current.correctAnswer) return 'success'
+    if (answer === selected) return 'danger'
+    return 'outline-secondary'
+  }
+
   return (
-    <div>
-      <h1>Quiz</h1>
-      <p>Loaded {questions.length} questions.</p>
-      <pre>{JSON.stringify(questions[0], null, 2)}</pre>
-    </div>
+    <Card className="mx-auto" style={{ maxWidth: '700px' }}>
+      <Card.Body>
+        <div className="d-flex justify-content-between mb-2">
+          <span>Question {currentIndex + 1} of {questions.length}</span>
+          <span>Score: {score}</span>
+        </div>
+        <ProgressBar
+          now={((currentIndex + 1) / questions.length) * 100}
+          className="mb-4"
+        />
+
+        <Card.Title as="h2" className="h4 mb-4">{current.question}</Card.Title>
+
+        <div className="d-grid gap-2">
+          {current.answers.map((answer) => (
+            <Button
+              key={answer}
+              variant={getVariant(answer)}
+              onClick={() => handleAnswer(answer)}
+              disabled={selected !== null}
+            >
+              {answer}
+            </Button>
+          ))}
+        </div>
+
+        {selected !== null && !isLast && (
+          <Button className="mt-4" onClick={handleNext}>Next question</Button>
+        )}
+        {selected !== null && isLast && (
+          <p className="mt-4 fw-bold">
+            Quiz finished! Final score: {score} / {questions.length}
+          </p>
+        )}
+      </Card.Body>
+    </Card>
   )
 }
 
