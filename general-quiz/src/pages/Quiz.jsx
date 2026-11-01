@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { useLocation, Link } from 'react-router-dom'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { Spinner, Alert, Button, Card, ProgressBar } from 'react-bootstrap'
 import { decode } from 'he'
-import { useLocation, useNavigate, Link } from 'react-router-dom'
+
 
 function shuffle(array) {
   const copy = [...array]
@@ -165,13 +165,14 @@ function Quiz() {
           ))}
         </div>
 
-        {selected !== null && !isLast && (
+       
+                {selected !== null && !isLast && (
           <Button className="mt-4" onClick={handleNext}>Next question</Button>
         )}
         {selected !== null && isLast && (
-          <p className="mt-4 fw-bold">
-            Quiz finished! Final score: {score} / {questions.length}
-          </p>
+          <Button className="mt-4" variant="success" onClick={handleFinish}>
+            See results
+          </Button>
         )}
       </Card.Body>
     </Card>
