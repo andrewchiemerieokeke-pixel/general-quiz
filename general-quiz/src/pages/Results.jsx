@@ -1,8 +1,15 @@
 import { useLocation, Link } from 'react-router-dom'
-import { Card, Button, Alert } from 'react-bootstrap'
+import { Card, Button, Alert, Table } from 'react-bootstrap'
 
 function Results() {
   const { state } = useLocation()
+  let history = []
+try {
+  history = JSON.parse(localStorage.getItem('quizHistory')) || []
+} catch {
+  history = []
+}
+const recent = [...history].reverse()
 
   return (
     <div className="mx-auto" style={{ maxWidth: '700px' }}>
@@ -20,6 +27,31 @@ function Results() {
           No quiz finished yet. <Link to="/">Start one!</Link>
         </Alert>
       )}
+
+
+      <h2 className="h4">Past attempts</h2>
+{recent.length === 0 ? (
+  <p>No attempts saved yet.</p>
+) : (
+  <Table striped responsive>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Difficulty</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {recent.map((a) => (
+        <tr key={a.id}>
+          <td>{a.date}</td>
+          <td>{a.difficulty}</td>
+          <td>{a.score} / {a.total}</td>
+        </tr>
+      ))}
+    </tbody>
+  </Table>
+)}
     </div>
   )
 }
